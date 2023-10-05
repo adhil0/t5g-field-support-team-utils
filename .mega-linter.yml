@@ -7,6 +7,11 @@ FILEIO_REPORTER: false
 # DISABLE_ERRORS: true # Uncomment if you want MegaLinter to detect errors but not block CI to pass
 JAVASCRIPT_DEFAULT_STYLE: prettier
 DISABLE: SPELL
-DISABLE_LINTERS: PYTHON_MYPY, PYTHON_PYRIGHT  # We don't use static typing
+DISABLE_LINTERS: 
+  # We don't use static typing
+  - PYTHON_MYPY
+  - PYTHON_PYRIGHT 
+  # https://github.com/oxsecurity/megalinter/issues/2849#issuecomment-1742244227
+  - REPOSITORY_DEVSKIM
 HTML_DJLINT_ARGUMENTS: "--profile jinja"
 PYTHON_PYLINT_ARGUMENTS: "--disable import-error"
