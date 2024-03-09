@@ -138,14 +138,19 @@ def get_cards(cfg, self=None, background=False):
         card_comments = []
         for comment in comments:
             body = comment.body
+            # Change plain url to clickable link (https://example.com ->
+            # <a href="https://example.com" target='_blank'>https://example.com</a>)
             body = re.sub(
                 (
                     r"(?<!\||\s)\s*?((http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))"
-                    r"([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])?)"
+                    r"([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#F-])?)"
                 ),
                 '<a href="' + r"\g<0>" + "\" target='_blank'>" + r"\g<0>" "</a>",
                 body,
             )
+
+            # Change Jira markup to clickable link ([here|https://example.com] ->
+            # <a href="https://example.com" target='_blank'>here</a>)
             body = re.sub(
                 (
                     r'\[([\s\w!"#$%&\'()*+,-.\/:;<=>?@[^_`{|}~]*?\s*?)\|\s*?'
@@ -254,7 +259,9 @@ def get_cards(cfg, self=None, background=False):
             "labels": issue.fields.labels,
             "bugzilla": bugzilla,
             "issues": case_issues,
-            "severity": re.search(r"[a-zA-Z]+", cases[case_number]["severity"]).group(),
+            "severity": re.search(
+                r"[a-zA-Z]+", cases[case_number]["severity"]
+            ).group(),  # 1 (Urgent) -> Urgent
             "priority": issue.fields.priority.name,
             "escalated": escalated,
             "escalated_link": escalated_link,
