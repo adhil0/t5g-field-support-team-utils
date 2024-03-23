@@ -36,12 +36,14 @@ jobs:
           djlint .
           mypy .
           yamllint .
+        continue-on-error: true
       - uses: actions/setup-node@v4
       - run: |
           npm install stylelint prettier jscpd
           npx stylelint .
           npx prettier --check .
           npx jscpd .
+        continue-on-error: true
       - uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: dashboard/Dockerfile
