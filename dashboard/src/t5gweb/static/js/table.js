@@ -142,7 +142,7 @@ $(document).ready(function () {
               label: "Cases on Prio-list or Watchlist or Crit Sit",
               value: function (rowData, rowIdx) {
                 return (
-                  rowData[3] === "Yes" ||
+                  rowData[3].includes("Yes") ||
                   rowData[4] === "Yes" ||
                   rowData[5] === "Yes"
                 );
@@ -374,4 +374,7 @@ $(document).ready(function () {
   $("#data").on("order.dt", updateOrder);
   $("#data").on("order.dt", updatePanes);
   $("#data").on("search.dt", updateSearch);
+  $('#data tbody').on('click', 'tr', function () {
+    console.log(table.row(this).data());
+  });
 });
