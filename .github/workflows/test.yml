@@ -24,7 +24,7 @@ jobs:
 
       - name: Install Python linters
         run: |
-          pip install -r requirements-linter.txt
+          pip install -r .github/workflows/requirements-linter.txt
 
       - name: Install Node linters
         run: |
