@@ -30,21 +30,21 @@ jobs:
         run: |
           npm install -g eslint standard markdownlint-cli stylelint jscpd
 
-      - name: Install gitleaks
-        run: |
-          curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz | tar -xz
-          sudo mv gitleaks /usr/local/bin
+    #   - name: Install gitleaks
+    #     run: |
+    #       curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz | tar -xz
+    #       sudo mv gitleaks /usr/local/bin
 
-      - name: Install hadolint
-        run: |
-          wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
-          chmod +x hadolint
-          sudo mv hadolint /usr/local/bin
+    #   - name: Install hadolint
+    #     run: |
+    #       wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+    #       chmod +x hadolint
+    #       sudo mv hadolint /usr/local/bin
 
-      - name: Install actionlint
-        run: |
-          curl -sSL https://github.com/rhysd/actionlint/releases/latest/download/actionlint_Linux_x86_64.tar.gz | tar -xz
-          sudo mv actionlint /usr/local/bin
+    #   - name: Install actionlint
+    #     run: |
+    #       curl -sSL https://github.com/rhysd/actionlint/releases/latest/download/actionlint_Linux_x86_64.tar.gz | tar -xz
+    #       sudo mv actionlint /usr/local/bin
 
   yamllint:
     needs: setup
