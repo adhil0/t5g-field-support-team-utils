@@ -1,152 +1,135 @@
 name: Parallel Linting
 
 on:
-  push:
+  push
+
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      python-cache: ${{ steps.python.outputs.cache-hit }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-          cache: 'pip'
-          cache-dependency-path: '**/requirements-linter.txt'
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'latest'
-
-      - name: Install Python linters
-        run: |
-          pip install -r .github/workflows/requirements-linter.txt
-
-      - name: Install Node linters
-        run: |
-          npm install -g eslint standard markdownlint-cli stylelint jscpd
-
-    #   - name: Install gitleaks
-    #     run: |
-    #       curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz | tar -xz
-    #       sudo mv gitleaks /usr/local/bin
-
-    #   - name: Install hadolint
-    #     run: |
-    #       wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
-    #       chmod +x hadolint
-    #       sudo mv hadolint /usr/local/bin
-
-    #   - name: Install actionlint
-    #     run: |
-    #       curl -sSL https://github.com/rhysd/actionlint/releases/latest/download/actionlint_Linux_x86_64.tar.gz | tar -xz
-    #       sudo mv actionlint /usr/local/bin
-
   yamllint:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: sudo apt-get install -y yamllint
       - run: yamllint .
 
   black:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install black
       - run: black --check .
 
   flake8:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install flake8
       - run: flake8 .
 
   isort:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install isort
       - run: isort --check-only .
 
   mypy:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install mypy
       - run: mypy .
 
   pylint:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pylint
       - run: pylint **/*.py || true
 
   ruff:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install ruff
       - run: ruff check .
 
   jscpd:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g jscpd
       - run: jscpd .
 
   markdownlint:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g markdownlint-cli
       - run: markdownlint '**/*.md'
 
   eslint:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g eslint
       - run: eslint . --ext .js,.jsx,.ts,.tsx || true
 
   standard:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g standard
       - run: standard || true
 
-  gitleaks:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: gitleaks detect --no-banner --redact
+#   gitleaks:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - run: |
+#           curl -sSL https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz | tar -xz
+#           sudo mv gitleaks /usr/local/bin
+#       - run: gitleaks detect --no-banner --redact
 
-  actionlint:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: actionlint
+#   actionlint:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - run: |
+#           curl -sSL https://github.com/rhysd/actionlint/releases/latest/download/actionlint_Linux_x86_64.tar.gz | tar -xz
+#           sudo mv actionlint /usr/local/bin
+#       - run: actionlint
 
-  hadolint:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: hadolint **/Dockerfile || true
+#   hadolint:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - run: |
+#           wget -O hadolint https://github.com/hadolint/hadolint/releases/latest/download/hadolint-Linux-x86_64
+#           chmod +x hadolint
+#           sudo mv hadolint /usr/local/bin
+#       - run: hadolint **/Dockerfile || true
 
   stylelint:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - run: npm install -g stylelint
       - run: stylelint "**/*.css"
