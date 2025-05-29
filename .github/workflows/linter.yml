@@ -23,6 +23,39 @@ jobs:
           # list of changed files within `super-linter`
           fetch-depth: 0
 
+      - name: Define Super-Linter Image Details
+        id: super_linter_image
+        run: |
+          echo "IMAGE_NAME=github/super-linter" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=v7.4.0" >> $GITHUB_OUTPUT # Specify the version you want to use and cache
+
+      - name: Cache Docker Image
+        id: cache-docker-image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/super-linter-image.tar
+          key: ${{ runner.os }}-docker-${{ steps.super_linter_image.outputs.IMAGE_NAME }}-${{ steps.super_linter_image.outputs.IMAGE_TAG }}
+          restore-keys: |
+            ${{ runner.os }}-docker-${{ steps.super_linter_image.outputs.IMAGE_NAME }}-
+
+      - name: Load Docker Image from Cache or Pull
+        run: |
+          IMAGE_TAR_PATH="/tmp/super-linter-image.tar"
+          IMAGE_TO_PULL="${{ steps.super_linter_image.outputs.IMAGE_NAME }}:${{ steps.super_linter_image.outputs.IMAGE_TAG }}"
+
+          if [ "${{ steps.cache-docker-image.outputs.cache-hit }}" = "true" ]; then
+            echo "Cache hit. Loading Docker image from $IMAGE_TAR_PATH..."
+            docker load --input $IMAGE_TAR_PATH
+            # Optionally, verify the image loaded correctly, though 'docker load' usually suffices
+            docker images $IMAGE_TO_PULL
+          else
+            echo "Cache miss. Pulling Docker image $IMAGE_TO_PULL..."
+            docker pull $IMAGE_TO_PULL
+            echo "Saving Docker image to $IMAGE_TAR_PATH for caching..."
+            mkdir -p $(dirname $IMAGE_TAR_PATH) # Ensure directory exists
+            docker save $IMAGE_TO_PULL --output $IMAGE_TAR_PATH
+          fi
+
       ################################
       # Run Linter against code base #
       ################################
@@ -55,8 +88,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-          cache: 'pip'
-          cache-dependency-path: '**/requirements-pytest.txt'
       - name: Install Dependencies
         run: pip install -r .github/workflows/requirements-pytest.txt
       - name: Test with pytest
