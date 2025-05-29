@@ -56,6 +56,7 @@ jobs:
         with:
           python-version: '3.x'
           cache: 'pip'
+          cache-dependency-path: '**/requirements-pytest.txt'
       - name: Install Dependencies
         run: pip install -r .github/workflows/requirements-pytest.txt
       - name: Test with pytest
