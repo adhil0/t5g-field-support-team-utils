@@ -26,8 +26,8 @@ jobs:
       - name: Define Super-Linter Image Details
         id: super_linter_image
         run: |
-          echo "IMAGE_NAME=github/super-linter" >> $GITHUB_OUTPUT
-          echo "IMAGE_TAG=v7.4.0" >> $GITHUB_OUTPUT # Specify the version you want to use and cache
+          echo "IMAGE_NAME=ghcr.io/super-linter/super-linter" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=slim-v7.4.0" >> $GITHUB_OUTPUT # Specify the version you want to use and cache
 
       - name: Cache Docker Image
         id: cache-docker-image
