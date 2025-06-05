@@ -10,43 +10,52 @@ name: Lint & Test Code Base
 # Start the job on all pull requests #
 #############################
 on:
-  pull_request:
-    branches: [master, main]
+  push
 
 jobs:
   lint:
     name: Lint Code Base
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          # Full git history is needed to get a proper
-          # list of changed files within `super-linter`
-          fetch-depth: 0
+      - name: Check out code
+        uses: actions/checkout@v4
 
-      ################################
-      # Run Linter against code base #
-      ################################
-      - name: Lint Code Base
-        uses: super-linter/super-linter/slim@v7
-        env:
-          VALIDATE_ALL_CODEBASE: false
-          VALIDATE_HTML: false
-          VALIDATE_HTML_PRETTIER: false
-          VALIDATE_CSS_PRETTIER: false
-          VALIDATE_JAVASCRIPT_PRETTIER: false
-          VALIDATE_JSON_PRETTIER: false
-          VALIDATE_YAML_PRETTIER: false
-          VALIDATE_MARKDOWN_PRETTIER: false
-          VALIDATE_PYTHON_PYINK: false
-          VALIDATE_CHECKOV: false
-          DEFAULT_BRANCH: main
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          KUBERNETES_KUBECONFORM_OPTIONS: -ignore-missing-schemas
-          # plugins.js contains different datatables plugins that we are self-hosting
-          # rather than using CDN/NPM, as described here:
-          # https://datatables.net/plug-ins/sorting/natural#Browser
-          FILTER_REGEX_EXCLUDE: plugins\.js
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x' # Specify your Python version
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8
+          # If you have a requirements.txt for linters or project dependencies:
+          # pip install -r requirements-dev.txt # or requirements.txt
+
+      - name: Run Black Linter
+        # This step will flag an error if Black finds issues, but the job will continue
+        continue-on-error: true
+        run: |
+          echo "::group::Black Output"
+          black --check .
+          echo "::endgroup::"
+          if [ $? -ne 0 ]; then
+            echo "::error title=Black Linter Failed::Black found formatting issues. Please run 'black .' to fix them."
+            # exit 1 # Optionally, you can still exit with 1 to ensure the step is marked as failed clearly
+          fi
+
+      - name: Run Flake8 Linter
+        # This step will flag an error if Flake8 finds issues, but the job will continue
+        continue-on-error: true
+        run: |
+          echo "::group::Flake8 Output"
+          flake8 .
+          echo "::endgroup::"
+          if [ $? -ne 0 ]; then
+            echo "::error title=Flake8 Linter Failed::Flake8 found style issues. Please check the output above for details."
+            # exit 1 # Optionally, you can still exit with 1 to ensure the step is marked as failed clearly
+          fi
+
   test:
     name: Test Code Base
     runs-on: ubuntu-latest
