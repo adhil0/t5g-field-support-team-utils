@@ -88,15 +88,12 @@ jobs:
         run: npx eslint .
   gitleaks:
     runs-on: ubuntu-latest
+    container: ghcr.io/gitleaks/gitleaks:latest
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-      - name: install
-        run: |
-          sudo apt-get update
-          sudo apt-get install gitleaks -y
       - name: Run gitleaks
-        run: gitleaks git
+        run: gitleaks .
 
   test:
     name: Test Code Base
