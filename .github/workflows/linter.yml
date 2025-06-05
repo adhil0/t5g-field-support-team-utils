@@ -53,7 +53,24 @@ jobs:
       - name: Run mypy
         run: |
           mypy .
+  yamllint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install mypy and type stubs
+        run: |
+          pip install yamllint
+
+      - name: Run mypy
+        run: |
+          yamllint .
   StandardJS:
     runs-on: ubuntu-latest
     steps:
@@ -70,7 +87,22 @@ jobs:
       - name: Run standard
         run: |
           npx standard .
+  style:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-node@v4
+
+      - name: Install standard
+        run: |
+          npm init stylelint
+
+      - name: Run standard
+        run: |
+          npx stylelint "**/*.css"
   eslint:
     runs-on: ubuntu-latest
     steps:
