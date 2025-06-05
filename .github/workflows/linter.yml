@@ -98,7 +98,7 @@ jobs:
 
       - name: Install standard
         run: |
-          npm init stylelint
+          npm install stylelint
 
       - name: Run standard
         run: |
