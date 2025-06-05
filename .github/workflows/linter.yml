@@ -32,6 +32,16 @@ jobs:
           # If you have a requirements.txt for linters or project dependencies:
           # pip install -r requirements-dev.txt # or requirements.txt
 
+      - name: Run Flake8 Linter
+        # This step will flag an error if Flake8 finds issues, but the job will continue
+        run: |
+          echo "::group::Flake8 Output"
+          flake8 .
+          echo "::endgroup::"
+          if [ $? -ne 0 ]; then
+            echo "::error title=Flake8 Linter Failed::Flake8 found style issues. Please check the output above for details."
+            exit 1 # Optionally, you can still exit with 1 to ensure the step is marked as failed clearly
+          fi
       - name: Run Black Linter
         # This step will flag an error if Black finds issues, but the job will continue
         continue-on-error: true
@@ -41,18 +51,6 @@ jobs:
           echo "::endgroup::"
           if [ $? -ne 0 ]; then
             echo "::error title=Black Linter Failed::Black found formatting issues. Please run 'black .' to fix them."
-            exit 1 # Optionally, you can still exit with 1 to ensure the step is marked as failed clearly
-          fi
-
-      - name: Run Flake8 Linter
-        # This step will flag an error if Flake8 finds issues, but the job will continue
-        continue-on-error: true
-        run: |
-          echo "::group::Flake8 Output"
-          flake8 .
-          echo "::endgroup::"
-          if [ $? -ne 0 ]; then
-            echo "::error title=Flake8 Linter Failed::Flake8 found style issues. Please check the output above for details."
             exit 1 # Optionally, you can still exit with 1 to ensure the step is marked as failed clearly
           fi
 
