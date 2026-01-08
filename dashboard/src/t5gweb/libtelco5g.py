@@ -901,7 +901,11 @@ def generate_stats(account=None, engineer=None):
     today = datetime.date.today()
 
     customers = [cards[card]["account"] for card in cards]
-    engineers = [cards[card]["assignee"]["displayName"] for card in cards]
+    engineers = [
+        cards[card]["assignee"]["displayName"]
+        for card in cards
+        if cards[card]["assignee"]["displayName"] is not None
+    ]
     severities = [cards[card]["severity"] for card in cards]
     statuses = [cards[card]["case_status"] for card in cards]
 
@@ -934,7 +938,8 @@ def generate_stats(account=None, engineer=None):
 
         if status != "Closed":
             stats["by_customer"][account] += 1
-            stats["by_engineer"][engineer] += 1
+            if engineer is not None:
+                stats["by_engineer"][engineer] += 1
             stats["by_severity"][severity] += 1
             if severity == "High" or severity == "Urgent":
                 stats["high_prio"] += 1
